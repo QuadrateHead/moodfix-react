@@ -1,11 +1,15 @@
+import type { Dispatch, SetStateAction } from 'react';
 import heroImage1 from '../assets/images/home-hero-image-1.png';
 import heroImage2 from '../assets/images/home-hero-image-2.png';
 import heroInfoImage from '../assets/images/home-hero-info-image.png';
 import searchIcon from '../assets/search-icon.svg';
-
-export default function Hero() {
+interface HeroProps{
+  searchTerm: string
+  setSearchTerm: Dispatch<SetStateAction<string>>
+}
+export default function Hero({searchTerm,setSearchTerm}: HeroProps) {
   return (
-    <section className="hero">
+    <section className="hero mb-20">
       {/* Fanned poster stack */}
       <div className="hero-posters">
         <img
@@ -45,6 +49,8 @@ export default function Hero() {
           <input
             id="hero-search"
             type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search through 300+ movies online"
           />
         </div>

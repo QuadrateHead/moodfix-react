@@ -1,12 +1,131 @@
 import modalMoviePoster from "../assets/images/modal-movie-poster.png";
 import modalMovieBanner from "../assets/images/modal-movie-banner.png";
 import arrowRightIcon from "../assets/arrow-right-icon.svg";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Spinner from "../elements/Spinner";
+
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface ProductionCompany {
+  id: number;
+  name: string;
+}
+
+interface ProductionCountry {
+  iso_3166_1: string;
+  name: string;
+}
+
+interface SpokenLanguage {
+  english_name: string;
+  iso_639_1: string;
+  name: string;
+}
+
+interface MovieDetails {
+  adult?: boolean;
+  backdrop_path?: string | null;
+  genres?: Genre[];
+  homepage?: string;
+  id: number;
+  imdb_id?: string;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path?: string | null;
+  production_companies?: ProductionCompany[];
+  production_countries?: ProductionCountry[];
+  release_date?: string;
+  revenue?: number;
+  runtime?: number;
+  spoken_languages?: SpokenLanguage[];
+  status?: string;
+  tagline?: string;
+  title: string;
+  vote_average?: number;
+  vote_count?: number;
+  budget?: number;
+}
 
 export default function MoviePage() {
   const handleBack = () => {
     window.history.pushState({}, "", "/");
     window.dispatchEvent(new PopStateEvent("popstate"));
   };
+  const { id } = useParams<{ id: string }>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const fetchMovieDetails = async () => {
+      try {
+        const response = await fetch(
+          `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos,credits,similar`,
+          {
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_KEY}`,
+            },
+          }
+        );
+        const data = await response.json();
+        setMovieDetails(data);
+      } catch (error) {
+        console.error("Error fetching movie details:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (id) {
+      fetchMovieDetails();
+    }
+  }, [id]);
+
+  if (!movieDetails || isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const backdropPath = movieDetails.backdrop_path
+    ? `https://image.tmdb.org/t/p/original${movieDetails.backdrop_path}`
+    : modalMovieBanner;
+  const posterPath = movieDetails.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
+    : modalMoviePoster;
+  const formattedReleaseDate = movieDetails.release_date
+    ? new Date(movieDetails.release_date).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "Unknown";
+  const countryNames = movieDetails.production_countries?.map((country) => country.name) ?? [];
+  const languageNames = movieDetails.spoken_languages?.map(
+    (lang) => lang.english_name || lang.name || lang.iso_639_1
+  ) ?? [];
+  const runtimeLabel = movieDetails.runtime
+    ? `${Math.floor(movieDetails.runtime / 60)}h ${movieDetails.runtime % 60}m`
+    : "N/A";
+  const ratingLabel = movieDetails.vote_average !== undefined
+    ? `${movieDetails.vote_average.toFixed(1)} / 10 (${movieDetails.vote_count?.toLocaleString() ?? "N/A"})`
+    : "N/A";
+  const budgetLabel = movieDetails.budget !== undefined
+    ? `$${movieDetails.budget.toLocaleString()}`
+    : "N/A";
+  const revenueLabel = movieDetails.revenue !== undefined
+    ? `$${movieDetails.revenue.toLocaleString()}`
+    : "N/A";
+  const genreTags = movieDetails.genres?.length ? movieDetails.genres : [];
+  const companyNames = movieDetails.production_companies?.map((company) => company.name) ?? [];
 
   return (
     <main className="movie-detail-page">
@@ -27,34 +146,27 @@ export default function MoviePage() {
       </button>
 
       {/* Backdrop */}
-      <div
-        className="backdrop"
-        style={{ backgroundImage: `url(${modalMovieBanner})` }}
-      />
+      <div className="backdrop" style={{ backgroundImage: `url(${backdropPath})` }} />
 
       <div className="wrapper">
         <div className="movie-info">
           {/* Header Row */}
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
             <div>
-              <h1>Squid Game 2</h1>
+              <h1>{movieDetails.title}</h1>
               <div className="meta-info">
-                <span className="pill">2024</span>
-                <span className="pill">PG-13</span>
-                <span className="pill">2h 46m</span>
+                <span className="pill">{movieDetails.release_date?.slice(0, 4) ?? "N/A"}</span>
+                <span className="pill">{movieDetails.adult ? "18+" : "PG-13"}</span>
+                <span className="pill">{runtimeLabel}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="pill rating">
-                <svg
-                  className="h-4 w-4"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                8.9 / 10 (200K)
+                {ratingLabel}
               </div>
               <div className="pill">
                 <span>Trend #1</span>
@@ -66,30 +178,24 @@ export default function MoviePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
             <div className="lg:col-span-1">
               <img
-                src={modalMoviePoster}
-                alt="Squid Game 2 Poster"
+                src={posterPath}
+                alt={`${movieDetails.title} Poster`}
                 className="w-full h-[441px] object-cover rounded-xl shadow-2xl"
               />
             </div>
             <div className="lg:col-span-2 relative">
               <img
-                src={modalMovieBanner}
-                alt="Squid Game 2 Banner"
+                src={backdropPath}
+                alt={`${movieDetails.title} Banner`}
                 className="w-full h-[441px] object-cover rounded-xl shadow-2xl"
               />
               <div className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/30 backdrop-blur-md px-5 py-2.5 rounded-full text-white font-semibold">
-                <svg
-                  className="h-5 w-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
                 <span>Trailer</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span className="text-sm font-normal text-light-100">
-                  00:31
-                </span>
+                <span className="text-sm font-normal text-light-100">00:31</span>
               </div>
             </div>
           </div>
@@ -99,9 +205,15 @@ export default function MoviePage() {
             <div className="flex items-center gap-4 flex-wrap">
               <span className="text-light-200 font-medium">Genres</span>
               <div className="flex gap-2 flex-wrap">
-                <span className="tag">Adventure</span>
-                <span className="tag">Action</span>
-                <span className="tag">Drama</span>
+                {genreTags.length > 0 ? (
+                  genreTags.map((genre) => (
+                    <span key={genre.id} className="tag">
+                      {genre.name}
+                    </span>
+                  ))
+                ) : (
+                  <span className="tag">N/A</span>
+                )}
               </div>
             </div>
 
@@ -115,112 +227,91 @@ export default function MoviePage() {
           </div>
 
           {/* Detail Info List */}
-          <div className="space-y-6 text-light-200">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Overview
-              </span>
-              <p className="text-white md:col-span-3 leading-relaxed">
-                Hundreds of cash-strapped players accept a strange invitation to
-                compete in children's games. Inside, a tempting prize awaits
-                with deadly high stakes: a survival game that has a whopping
-                45.6 billion-won prize at stake.
+          <div className="space-y-6 text-light-200 w-full">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Overview</span>
+              <p className="text-white md:flex-1 text-left leading-relaxed">
+                {movieDetails.overview ?? "No overview available."}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Release date
-              </span>
-              <span className="text-[#D6C7FF] md:col-span-3 font-semibold">
-                December 26, 2024 (Worldwide)
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Release date</span>
+              <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">
+                {formattedReleaseDate}
+                {countryNames.length > 0 ? ` (${countryNames.join(", ")})` : ""}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Countries
-              </span>
-              <div className="text-[#D6C7FF] md:col-span-3 font-semibold flex items-center gap-2 flex-wrap">
-                <span>United States</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Canada</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>UAE</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Hungary</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Italy</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>New Zealand</span>
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Countries</span>
+              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-start gap-2 flex-wrap">
+                {countryNames.length > 0 ? (
+                  countryNames.flatMap((country, index) => [
+                    <span key={`country-${index}`}>{country}</span>,
+                    index < countryNames.length - 1 ? (
+                      <span key={`country-sep-${index}`} className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
+                    ) : null,
+                  ])
+                ) : (
+                  <span>Unknown</span>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Status
-              </span>
-              <span className="text-[#D6C7FF] md:col-span-3 font-semibold">
-                Released
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Status</span>
+              <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">
+                {movieDetails.status ?? "Unknown"}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Language
-              </span>
-              <div className="text-[#D6C7FF] md:col-span-3 font-semibold flex items-center gap-2 flex-wrap">
-                <span>English</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Korean</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Hindi</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Arabic</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>German</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span>Spanish</span>
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Language</span>
+              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-start gap-2 flex-wrap">
+                {languageNames.length > 0 ? (
+                  languageNames.flatMap((language, index) => [
+                    <span key={`language-${index}`}>{language}</span>,
+                    index < languageNames.length - 1 ? (
+                      <span key={`language-sep-${index}`} className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
+                    ) : null,
+                  ])
+                ) : (
+                  <span>{movieDetails.original_language ?? "N/A"}</span>
+                )}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Budget
-              </span>
-              <span className="text-[#D6C7FF] md:col-span-3 font-semibold">
-                $21.4 million
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Budget</span>
+              <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">{budgetLabel}</span>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Revenue</span>
+              <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">{revenueLabel}</span>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Tagline</span>
+              <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">
+                {movieDetails.tagline ?? "No tagline available."}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Revenue
-              </span>
-              <span className="text-[#D6C7FF] md:col-span-3 font-semibold">
-                $900 Million
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Tagline
-              </span>
-              <span className="text-[#D6C7FF] md:col-span-3 font-semibold">
-                45.6 Billion Won is Child's Play
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-              <span className="text-light-200 font-medium md:col-span-1">
-                Production Companies
-              </span>
-              <div className="text-[#D6C7FF] md:col-span-3 font-semibold flex items-center gap-2 flex-wrap">
-                <span>Legendary Entertainment</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D6C7FF]"></span>
-                <span>Warner Bros. Entertainment</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D6C7FF]"></span>
-                <span>Villeneuve Films</span>
+            <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
+              <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Production Companies</span>
+              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-start gap-2 flex-wrap">
+                {companyNames.length > 0 ? (
+                  companyNames.flatMap((company, index) => [
+                    <span key={`company-${index}`}>{company}</span>,
+                    index < companyNames.length - 1 ? (
+                      <span key={`company-sep-${index}`} className="w-1.5 h-1.5 rounded-full bg-[#D6C7FF]"></span>
+                    ) : null,
+                  ])
+                ) : (
+                  <span>Unknown</span>
+                )}
               </div>
             </div>
           </div>

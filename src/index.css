@@ -22,6 +22,8 @@
 
 @layer base {
   body {
+    margin: 0;
+    min-height: 100vh;
     font-family: "DM Sans", serif;
     font-optical-sizing: auto;
     background: #030014;
@@ -44,7 +46,7 @@
   }
 
   header img {
-    @apply w-full max-w-lg h-auto object-contain mx-auto drop-shadow-md;
+    @apply w-[91px] h-auto mx-auto drop-shadow-md;
   }
 }
 
@@ -58,7 +60,6 @@
   }
 
   .trending {
-    @apply mt-20;
 
     & ul {
       @apply flex flex-row overflow-y-auto gap-5 -mt-10 w-full hide-scrollbar;
@@ -149,8 +150,8 @@
     }
 
     & .hover-content {
-      @apply absolute inset-0 bg-gradient-to-t from-dark-100 via-dark-100/95 to-transparent
-             p-4 flex flex-col justify-end gap-3 opacity-0 transition-opacity duration-300;
+      @apply absolute inset-0 top-7/10 bg-gradient-to-t from-dark-100 via-dark-100/95 to-transparent
+             p-4 flex flex-col justify-end gap-3 opacity-100 transition-opacity duration-300;
 
       .movie-card.hovered & {
         @apply opacity-100;
@@ -332,7 +333,7 @@
 
   /* ── Hero Section ─────────────────────────── */
   .hero {
-    @apply flex flex-col items-center mt-10;
+    @apply flex flex-col mt-10;
   }
 
   .hero-posters {
@@ -367,7 +368,7 @@
 
   /* ── Pagination ──────────────────────────── */
   .pagination {
-    @apply flex items-center justify-center gap-6 mt-8;
+    @apply flex items-center justify-center gap-6;
   }
 
   .pagination-btn {

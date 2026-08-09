@@ -1,43 +1,49 @@
 # Progress Tracker
 
-Update this file after every meaningful implementation
-change.
+Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-- In Progress
+- In Progress — fixing Figma-fidelity issues on HomePage/MoviePage
 
 ## Current Goal
 
-- Implement HomePage UI from Figma spec (feature-spec 01-creating-homepage.md)
+- Resolve open issues in `current-issues.md` so HomePage and MoviePage
+  match the Figma spec (feature-spec 01-creating-homepage.md)
 
 ## Completed
-
+ 
 - HomePage implementation with Logo, Hero, Trending, Popular, and Pagination blocks.
 - MoviePage implementation following Figma specs and `ui-context.md`.
 - Basic routing in `App.tsx` using `popstate` and `pushState` for `/` and `/movie`.
 - Refactored `Popular.tsx` to use `MovieCard` element.
 - Added navigation logic to `MovieCard` and `TrendingCard`.
 
+
 ## In Progress
 
-- None
+- Logo sizing does not match Figma spec (too large) — see `current-issues.md` #1
+- Page is not horizontally centered — see `current-issues.md` #2
+- Overall design deviates from Figma HomePage (node-id 89001-1372) and
+  MoviePage (node-id 89001-1822) — see `current-issues.md` #3
 
 ## Next Up
 
-- Final UI review and pixel-perfect adjustments if needed.
+- Once current issues are resolved and verified against Figma, mark
+  feature-spec 01 as fully complete and move to the next feature spec.
 
 ## Open Questions
 
-- [Any unresolved product or technical decisions]
+- None
 
 ## Architecture Decisions
 
-- [Decisions made that affect the system design or
-  data model — include why the decision was made]
+- Lightweight browser history navigation (`pushState` / `popstate`) used for routing between `/` (HomePage) and `/movie` (MoviePage).
 
 ## Session Notes
 
-- Home page is served at `/`; the static movie detail page is available at `/movie`.
-- No API calls, data fetching, or interactive behavior are included.
-- The available movie artwork is limited to `no-movie.png`; unavailable detail backdrop artwork is represented without an image.
+- Home page is served at `/`; static movie detail page is available at `/movie`.
+- `npm run build` succeeds without errors.
+- Do not mark a phase "Completed" while `current-issues.md` still has
+  unresolved entries — clear that file (or move entries here as
+  Completed) before flipping this status.

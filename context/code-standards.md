@@ -2,41 +2,50 @@
 
 ## General
 
-- [Principle — e.g. Keep modules small and single-purpose]
-- [Principle — e.g. Fix root causes, do not layer workarounds]
-- [Principle — e.g. Do not mix unrelated concerns in one
-  component or route]
+- Keep components small and single-purpose — one component, one job.
+- Fix root causes; do not patch symptoms with one-off CSS overrides
+  or inline style hacks.
+- Do not mix layout/section components (e.g. `Trending.tsx`) with
+  low-level reusable elements (e.g. `MovieCard.tsx`) — sections
+  compose elements, they don't duplicate their markup.
 
 ## TypeScript
 
-- [Rule — e.g. Strict mode is required throughout the project]
-- [Rule — e.g. Avoid any — use explicit interfaces or narrowly
-  scoped types]
-- [Rule — e.g. Validate unknown external input at system
-  boundaries before trusting it]
+- Strict mode is required throughout the project.
+- Avoid `any` — use explicit interfaces/types for movie data, props,
+  and API-shaped objects even if the data is currently static/mock.
+- Prefer named exports for components; one component per file.
 
 ## Styling
 
-- [Rule — e.g. Use CSS custom property tokens — no
-  hardcoded hex values]
-- [Rule — e.g. Follow the border radius scale defined
-  in ui-context.md]
-- [Do not change index.css and App.css files, you should use this files for styles, and if it is so neccessery you could add variables into index.css without changes of old content]
+- Use Tailwind utility classes with tokens already defined in
+  `/src/index.css`. Do not hardcode HEX colors anywhere in JSX or CSS.
+- Do not change `index.css` or `App.css` structurally — only add new
+  CSS custom properties/tokens if a needed value is genuinely missing,
+  and add them without touching existing content.
+- Follow spacing, radius, and icon-size rules exactly as defined in
+  `ui-context.md` — that file is the source of truth for visual
+  values, this file is the source of truth for how code is organized.
 
 ## API
 
-- [Rule — e.g. Do not do API because I should do it by myself]
+- No live API integration in this project's current scope. Use static
+  or mock data only. If real API integration becomes in-scope, this
+  file and `project-overview.md` must be updated first.
 
 ## Data and Storage
 
-- [Rule — e.g. Metadata belongs in the database]
-- [Rule — e.g. Large generated content belongs in file
-  or blob storage]
-- [Rule — e.g. Do not store large content directly in
-  the database]
+- No database or persistence layer in this project's current scope —
+  movie data is static/mock, held in-repo (e.g. a `data/` module).
+- If persistence is added later, metadata belongs in a database and
+  large generated content (images, etc.) belongs in file/blob storage,
+  never inlined into component code.
 
 ## File Organization
 
-- `/src/components` — [Should contain components]
-- `/src/elements` — [Should contain reusable elements like MovieCard]
-- `/src/assets/images` — [Should contain images]
+- `/src/components` — page-level and section components (`HomePage`,
+  `MoviePage`, `Hero`, `Trending`, `Popular`, `Pagination`)
+- `/src/elements` — reusable, composable UI pieces (`MovieCard`,
+  `TrendingCard`, `Logo`)
+- `/src/assets/images` — static image assets (posters, backdrops,
+  icons not covered by Lucide)
