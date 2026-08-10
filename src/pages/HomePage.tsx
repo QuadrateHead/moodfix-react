@@ -2,8 +2,9 @@ import logoSvg from '../assets/logo.svg';
 import Hero from '../components/Hero';
 import Trending from '../components/Trending';
 import Popular from '../components/Popular';
+import type { Movie } from '../components/Popular';
 import Pagination from '../components/Pagination';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from "@uidotdev/usehooks";
 import { getTrendingMovies, updateSearchCount } from '../lib/appwrite';
 import type { MetricsRow } from '../lib/appwrite'; 
@@ -16,56 +17,78 @@ const API_OPTIONS = {
     accept: 'application/json',
     Authorization: `Bearer ${API_KEY}`
   }
+};
+
+const EMPTY_MOVIES: Movie[] = [];
+
+interface MoviesState {
+  movies: Movie[];
+  isLoading: boolean;
+  errorMessage: string;
 }
+
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [movieList, setMovieList] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [moviesState, setMoviesState] = useState<MoviesState>({
+    movies: EMPTY_MOVIES,
+    isLoading: false,
+    errorMessage: '',
+  });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const [trendingMovies, setTrendingMovies] = useState<MetricsRow[]>([]);
   
-  const fetchData = async (query: string) => {
-    setIsLoading(true);
-    setErrorMessage('');
-    try{
+  const fetchData = useCallback(async (query: string) => {
+    setMoviesState((prev) => ({
+      ...prev,
+      isLoading: true,
+      errorMessage: '',
+    }));
+    try {
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
         : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
       const response = await fetch(endpoint, API_OPTIONS);
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error('Failed to fetch movies');
       }
       const data = await response.json();
-      if(!data.results) {
-        setErrorMessage(data.Error || 'Failed to fetch movies');
-        setMovieList([]);
+      if (!data.results) {
+        setMoviesState({
+          movies: EMPTY_MOVIES,
+          isLoading: false,
+          errorMessage: data.Error || 'Failed to fetch movies',
+        });
         return;
       }
-      setMovieList(data.results || []);
-      if(query && data.results.length > 0) {
+      setMoviesState({
+        movies: data.results.length > 0 ? data.results : EMPTY_MOVIES,
+        isLoading: false,
+        errorMessage: '',
+      });
+      if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
       }
-    }catch(error){
+    } catch (error) {
       console.error(error);
-      setErrorMessage(error instanceof Error ? error.message : 'Failed to fetch movies');
+      setMoviesState({
+        movies: EMPTY_MOVIES,
+        isLoading: false,
+        errorMessage: error instanceof Error ? error.message : 'Failed to fetch movies',
+      });
     }
-    finally{
-      setIsLoading(false);
-    }
-  }
-
-  const loadTrendingMovies = async () => {
+  }, []);
+  
+  const loadTrendingMovies = useCallback(async () => {
     try {
       const movies = await getTrendingMovies();
       setTrendingMovies(movies);
     } catch (error) {
       console.error(`Error fetching trending movies: ${error}`);
     }
-  }
+  }, []);
   useEffect(() => {
     loadTrendingMovies();
   }, []);
@@ -87,7 +110,7 @@ export default function HomePage() {
         <Trending trendingMovies = {trendingMovies}/>
 
         {/* Popular: 4-col × 3-row movie grid */}
-        <Popular movieList = {movieList} errorMessage={errorMessage} isLoading={isLoading} />
+        <Popular movieList = {moviesState.movies} errorMessage={moviesState.errorMessage} isLoading={moviesState.isLoading} />
 
         {/* Pagination: centred left-arrow / current of total / right-arrow */}
         <div className="mt-12">

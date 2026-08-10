@@ -1,10 +1,12 @@
+import { memo } from "react";
+
 interface TrendingCardProps {
   rank: number;
   posterSrc: string;
   title: string;
 }
 
-export default function TrendingCard({ rank, posterSrc, title }: TrendingCardProps) {
+function TrendingCard({ rank, posterSrc, title }: TrendingCardProps) {
 
   return (
     <li className="cursor-pointer">
@@ -13,3 +15,4 @@ export default function TrendingCard({ rank, posterSrc, title }: TrendingCardPro
     </li>
   );
 }
+export default memo(TrendingCard)

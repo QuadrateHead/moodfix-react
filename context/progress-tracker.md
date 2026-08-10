@@ -18,6 +18,7 @@ Update this file after every meaningful implementation change.
 - Basic routing in `App.tsx` using `popstate` and `pushState` for `/` and `/movie`.
 - Refactored `Popular.tsx` to use `MovieCard` element.
 - Added navigation logic to `MovieCard` and `TrendingCard`.
+- Optimized re-renders for `Popular.tsx` by wrapping `MovieCard` in `React.memo`, consolidating fetch state in `HomePage.tsx`, and using stable `EMPTY_MOVIES` array constant reference.
 
 
 ## In Progress

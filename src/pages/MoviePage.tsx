@@ -1,7 +1,7 @@
 import modalMoviePoster from "../assets/images/modal-movie-poster.png";
 import modalMovieBanner from "../assets/images/modal-movie-banner.png";
 import arrowRightIcon from "../assets/arrow-right-icon.svg";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Spinner from "../elements/Spinner";
 
@@ -53,9 +53,9 @@ interface MovieDetails {
 }
 
 export default function MoviePage() {
+  const navigate = useNavigate();
   const handleBack = () => {
-    window.history.pushState({}, "", "/");
-    window.dispatchEvent(new PopStateEvent("popstate"));
+    navigate("/");
   };
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);

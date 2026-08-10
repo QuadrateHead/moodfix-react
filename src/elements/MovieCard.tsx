@@ -1,9 +1,12 @@
 import type { Movie } from "../components/Popular";
+import posterPlaceholder from "../assets/images/modal-movie-poster.png";
+import { memo } from "react";
+
 interface MovieCardProps {
   movie: Movie;
 }
 
-export default function MovieCard({ movie }: MovieCardProps) {
+function MovieCard({ movie }: MovieCardProps) {
   return (
     <div className="movie-card cursor-pointer">
       <div className="poster">
@@ -11,7 +14,7 @@ export default function MovieCard({ movie }: MovieCardProps) {
           src={
             movie.poster_path
               ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
-              : "/no-movie.png"
+              : posterPlaceholder
           }
           alt={movie.title}
         />
@@ -34,3 +37,5 @@ export default function MovieCard({ movie }: MovieCardProps) {
     </div>
   );
 }
+
+export default memo(MovieCard);

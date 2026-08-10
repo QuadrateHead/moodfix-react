@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import MovieCard from "../elements/MovieCard";
+import { memo } from "react";
 
 export interface Movie {
   id: number;
@@ -14,11 +15,12 @@ interface PopularProps {
   errorMessage: string
   isLoading: boolean
 }
-export default function Popular({movieList, errorMessage, isLoading} : PopularProps) {
+function Popular({movieList, errorMessage, isLoading} : PopularProps) {
   
   return (
     <section className="all-movies">
-      <h2>{"Popular"}</h2>
+      <h2>Popular</h2>
+      {movieList.length <=0 && <h2 className="w-full text-5xl">Not Found</h2>}
       {isLoading ? (<p className="w-full text-5xl">Loading...</p>) : errorMessage ? (<p>{errorMessage}</p>) :
       (<ul>
         {movieList.map((movie) => (
@@ -30,3 +32,4 @@ export default function Popular({movieList, errorMessage, isLoading} : PopularPr
     </section>
   );
 }
+export default memo(Popular)

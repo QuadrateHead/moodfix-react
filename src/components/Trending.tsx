@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom';
 import TrendingCard from '../elements/TrendingCard';
 import type { MetricsRow } from '../lib/appwrite'; 
+import { memo } from 'react';
 // Portrait-format poster images from public/images (selected for aspect ratio)
 
 interface TrendingProps {
   trendingMovies: MetricsRow[]
 }
-export default function Trending({trendingMovies}: TrendingProps) {
+function Trending({trendingMovies}: TrendingProps) {
   return (
     <section className="trending">
       <h2>Trending</h2>
@@ -24,3 +25,4 @@ export default function Trending({trendingMovies}: TrendingProps) {
     </section>
   );
 }
+export default memo(Trending)
