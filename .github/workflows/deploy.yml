@@ -39,6 +39,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check build secrets
+        run: |
+          test -n "${VITE_TMDB_API_KEY}" || (echo 'VITE_TMDB_API_KEY is missing' && exit 1)
+          test -n "${VITE_APPWRITE_ENDPOINT}" || (echo 'VITE_APPWRITE_ENDPOINT is missing' && exit 1)
+          test -n "${VITE_APPWRITE_PROJECT_ID}" || (echo 'VITE_APPWRITE_PROJECT_ID is missing' && exit 1)
+          test -n "${VITE_APPWRITE_DATABASE_ID}" || (echo 'VITE_APPWRITE_DATABASE_ID is missing' && exit 1)
+          test -n "${VITE_APPWRITE_TABLE_ID}" || (echo 'VITE_APPWRITE_TABLE_ID is missing' && exit 1)
+          echo 'Required VITE secrets are available.'
+
       - name: Build
         run: npm run build
 
