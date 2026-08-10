@@ -74,6 +74,7 @@ export default function HomePage() {
       });
       if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
+        setCurrentPage(1);
       }
     } catch (error) {
       console.error(error);
