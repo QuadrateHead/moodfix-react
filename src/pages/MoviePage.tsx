@@ -150,7 +150,6 @@ export default function MoviePage() {
       </button>
 
       {/* Backdrop */}
-      <div className="backdrop" style={{ backgroundImage: `url(${backdropPath})` }} />
 
       <div className="wrapper">
         <div className="movie-info">
