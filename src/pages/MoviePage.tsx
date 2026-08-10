@@ -26,6 +26,14 @@ interface SpokenLanguage {
   name: string;
 }
 
+interface VideoResult {
+  id: string;
+  key: string;
+  name: string;
+  site: string;
+  type: string;
+}
+
 interface MovieDetails {
   adult?: boolean;
   backdrop_path?: string | null;
@@ -50,6 +58,9 @@ interface MovieDetails {
   vote_average?: number;
   vote_count?: number;
   budget?: number;
+  videos?: {
+    results: VideoResult[];
+  };
 }
 
 export default function MoviePage() {
@@ -60,6 +71,7 @@ export default function MoviePage() {
   const { id } = useParams<{ id: string }>();
   const [isLoading, setIsLoading] = useState(false);
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
+  const [showTrailer, setShowTrailer] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -89,6 +101,10 @@ export default function MoviePage() {
     if (id) {
       fetchMovieDetails();
     }
+  }, [id]);
+
+  useEffect(() => {
+    setShowTrailer(false);
   }, [id]);
 
   if (!movieDetails || isLoading) {
@@ -130,6 +146,11 @@ export default function MoviePage() {
     : "N/A";
   const genreTags = movieDetails.genres?.length ? movieDetails.genres : [];
   const companyNames = movieDetails.production_companies?.map((company) => company.name) ?? [];
+  const trailer = movieDetails.videos?.results.find(
+    (video) => video.site === "YouTube" && video.type === "Trailer"
+  );
+  const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?rel=0&autoplay=1` : null;
+  const hasTrailer = Boolean(trailerUrl);
 
   return (
     <main className="movie-detail-page">
@@ -187,19 +208,32 @@ export default function MoviePage() {
               />
             </div>
             <div className="lg:col-span-2 relative">
-              <img
-                src={backdropPath}
-                alt={`${movieDetails.title} Banner`}
-                className="w-full h-[441px] object-cover rounded-xl shadow-2xl"
-              />
-              <div className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/30 backdrop-blur-md px-5 py-2.5 rounded-full text-white font-semibold">
+              {showTrailer && trailerUrl ? (
+                <iframe
+                  className="w-full h-[441px] rounded-xl shadow-2xl"
+                  src={`${trailerUrl}&controls=0&modestbranding=1&fs=1&iv_load_policy=3&playsinline=1&vq=hd1080`}
+                  title={`${movieDetails.title} Trailer`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <img
+                  src={backdropPath}
+                  alt={`${movieDetails.title} Banner`}
+                  className="w-full h-[441px] object-cover rounded-xl shadow-2xl"
+                />
+              )}
+              <button
+                onClick={() => setShowTrailer((prev) => !prev)}
+                className="absolute bottom-6 left-6 flex items-center gap-3 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-full text-dark-900 font-semibold hover:opacity-90 transition-opacity"
+                type="button"
+              >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                <span>Trailer</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-light-200"></span>
-                <span className="text-sm font-normal text-light-100">00:31</span>
-              </div>
+                <span>{showTrailer ? "Stop Trailer" : hasTrailer ? "Play Trailer" : "No Trailer"}</span>
+              </button>
             </div>
           </div>
 
