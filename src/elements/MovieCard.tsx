@@ -10,14 +10,18 @@ function MovieCard({ movie }: MovieCardProps) {
   return (
     <div className="movie-card cursor-pointer">
       <div className="poster">
-        <img
-          src={
-            movie.poster_path
-              ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
-              : posterPlaceholder
-          }
-          alt={movie.title}
-        />
+        {movie.poster_path ? (
+          <img
+            src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
+            alt={movie.title}
+          />
+        ) : (
+          <div className="flex items-center justify-center 
+          w-full h-[400px] object-cover rounded-lg transition-transform duration-300;
+           bg-no-poster text-primary">
+            <h2>Poster Not Available</h2>
+          </div>
+        )}
       </div>
       <div className="hover-content">
         <h3>{movie.title}</h3>

@@ -12,6 +12,7 @@
   --color-gray-100: #9ca4ab;
 
   --color-dark-100: #0f0d23;
+  --color-no-poster: #2C2948;
 
   --font-dm-sans: DM Sans, sans-serif;
 
@@ -249,7 +250,7 @@
     }
 
     & .wrapper {
-      @apply relative z-10 pt-[45vh];
+      @apply relative z-10 md:pt-[45vh] pt-[15vh];
     }
 
     & .back-button {
@@ -337,8 +338,8 @@
   }
 
   .hero-posters {
-    @apply relative flex items-end justify-center mb-10;
-    height: 260px;
+    @apply relative flex justify-center mb-10 overflow-hidden scrollbar-none;
+    height: 280px;
   }
 
   .hero-poster {

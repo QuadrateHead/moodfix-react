@@ -249,7 +249,7 @@ export default function MoviePage() {
 
             <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
               <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Countries</span>
-              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-start gap-2 flex-wrap">
+              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-center gap-2 flex-wrap">
                 {countryNames.length > 0 ? (
                   countryNames.flatMap((country, index) => [
                     <span key={`country-${index}`}>{country}</span>,
@@ -272,7 +272,7 @@ export default function MoviePage() {
 
             <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
               <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Language</span>
-              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-start gap-2 flex-wrap">
+              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-center gap-2 flex-wrap">
                 {languageNames.length > 0 ? (
                   languageNames.flatMap((language, index) => [
                     <span key={`language-${index}`}>{language}</span>,
@@ -305,7 +305,7 @@ export default function MoviePage() {
 
             <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
               <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Production Companies</span>
-              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-start gap-2 flex-wrap">
+              <div className="text-[#D6C7FF] md:flex-1 text-left font-semibold flex items-center gap-2 flex-wrap">
                 {companyNames.length > 0 ? (
                   companyNames.flatMap((company, index) => [
                     <span key={`company-${index}`}>{company}</span>,
