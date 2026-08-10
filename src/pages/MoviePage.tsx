@@ -65,12 +65,16 @@ export default function MoviePage() {
     setIsLoading(true);
     const fetchMovieDetails = async () => {
       try {
+        const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+        if (!apiKey) {
+          throw new Error('TMDB API key is not configured. Please add VITE_TMDB_API_KEY.');
+        }
         const response = await fetch(
           `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos,credits,similar`,
           {
             headers: {
               accept: "application/json",
-              Authorization: `Bearer ${import.meta.env.VITE_TMDB_API_KEY}`,
+              Authorization: `Bearer ${apiKey}`,
             },
           }
         );

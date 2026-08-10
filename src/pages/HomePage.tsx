@@ -11,13 +11,7 @@ import type { MetricsRow } from '../lib/appwrite';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const API_OPTIONS = {
-  method: 'GET',
-  headers: {
-    accept: 'application/json',
-    Authorization: `Bearer ${API_KEY}`
-  }
-};
+const isTmdbConfigured = Boolean(API_KEY);
 
 const EMPTY_MOVIES: Movie[] = [];
 
@@ -47,10 +41,19 @@ export default function HomePage() {
       errorMessage: '',
     }));
     try {
+      if (!isTmdbConfigured) {
+        throw new Error('TMDB API key is not configured. Please add VITE_TMDB_API_KEY.');
+      }
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
         : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
-      const response = await fetch(endpoint, API_OPTIONS);
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${API_KEY}`,
+        },
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch movies');
       }

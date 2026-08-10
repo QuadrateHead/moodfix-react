@@ -3,12 +3,21 @@ import { Client, TablesDB, ID, Query, type Models } from 'appwrite';
 const PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const TABLE_ID = import.meta.env.VITE_APPWRITE_TABLE_ID;
+const APPWRITE_ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT;
 
-export const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1')
-  .setProject(PROJECT_ID);
+export const isAppwriteConfigured = Boolean(
+  APPWRITE_ENDPOINT && PROJECT_ID && DATABASE_ID && TABLE_ID,
+);
 
-const tablesDB = new TablesDB(client);
+export const client = new Client();
+if (APPWRITE_ENDPOINT) {
+  client.setEndpoint(APPWRITE_ENDPOINT);
+}
+if (PROJECT_ID) {
+  client.setProject(PROJECT_ID);
+}
+
+const tablesDB = isAppwriteConfigured ? new TablesDB(client) : null;
 
 // Shape of a row in the "metrics" table
 export interface MetricsRow extends Models.Row {
@@ -28,6 +37,10 @@ export const updateSearchCount = async (
   searchTerm: string,
   movie: Movie
 ): Promise<void> => {
+  if (!isAppwriteConfigured || !tablesDB) {
+    return;
+  }
+
   try {
     // 1. Check if a row for this movie already exists by movie_id
     const result = await tablesDB.listRows<MetricsRow>({
@@ -68,6 +81,10 @@ export const updateSearchCount = async (
 };
 
 export const getTrendingMovies = async (): Promise<MetricsRow[]> => {
+  if (!isAppwriteConfigured || !tablesDB) {
+    return [];
+  }
+
   try {
     const result = await tablesDB.listRows<MetricsRow>({
       databaseId: DATABASE_ID,
