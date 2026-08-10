@@ -33,6 +33,7 @@ export default function HomePage() {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const [trendingMovies, setTrendingMovies] = useState<MetricsRow[]>([]);
+  const [pageSize, setPageSize] = useState<number>(12);
   
   const fetchData = useCallback(async (query: string) => {
     setMoviesState((prev) => ({
@@ -95,9 +96,45 @@ export default function HomePage() {
   useEffect(() => {
     loadTrendingMovies();
   }, []);
+
   useEffect(() => {
-    fetchData(debouncedSearchTerm)
-  }, [debouncedSearchTerm])
+    fetchData(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    const updatePageSize = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) {
+        setPageSize(12);
+      } else if (width >= 768) {
+        setPageSize(9);
+      } else if (width >= 640) {
+        setPageSize(6);
+      } else {
+        setPageSize(4);
+      }
+    };
+
+    updatePageSize();
+    window.addEventListener('resize', updatePageSize);
+    return () => window.removeEventListener('resize', updatePageSize);
+  }, []);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPages = Math.max(Math.ceil(moviesState.movies.length / pageSize), 1);
+
+  const movePagePrev = useCallback(() => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  }, []);
+
+  const movePageNext = useCallback(() => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  }, [totalPages]);
+
+  useEffect(() => {
+    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
+  }, [totalPages]);
+
   return (
     <main>
       <div className="wrapper">
@@ -113,11 +150,17 @@ export default function HomePage() {
         <Trending trendingMovies = {trendingMovies}/>
 
         {/* Popular: 4-col × 3-row movie grid */}
-        <Popular movieList = {moviesState.movies} errorMessage={moviesState.errorMessage} isLoading={moviesState.isLoading} />
+        <Popular
+          movieList={moviesState.movies}
+          errorMessage={moviesState.errorMessage}
+          isLoading={moviesState.isLoading}
+          currentPage={currentPage}
+          pageSize={pageSize}
+        />
 
         {/* Pagination: centred left-arrow / current of total / right-arrow */}
         <div className="mt-12">
-          <Pagination currentPage={1} totalPages={3} />
+          <Pagination currentPage={currentPage} totalPages={totalPages} movePagePrev = {movePagePrev} movePageNext = {movePageNext}/>
         </div>
       </div>
     </main>
