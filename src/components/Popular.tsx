@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import MovieCard from "../elements/MovieCard";
 import { memo } from "react";
+import { updateSearchCount } from "../lib/appwrite";
 
 export interface Movie {
   id: number;
@@ -24,7 +25,7 @@ function Popular({movieList, errorMessage, isLoading} : PopularProps) {
       {isLoading ? (<p className="w-full text-5xl">Loading...</p>) : errorMessage ? (<p>{errorMessage}</p>) :
       (<ul>
         {movieList.map((movie) => (
-          <Link to={`/movie/${movie.id}`} key={movie.id}>
+          <Link onClick={() => updateSearchCount(movie.title, movie)} to={`/movie/${movie.id}`} key={movie.id}>
             <MovieCard movie = {movie}/>
           </Link>
         ))}
