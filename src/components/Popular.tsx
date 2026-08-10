@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import MovieCard from "../elements/MovieCard";
 import { memo } from "react";
 import { updateSearchCount } from "../lib/appwrite";
+import Spinner from "../elements/Spinner";
 
 export interface Movie {
   id: number;
@@ -25,7 +26,7 @@ function Popular({movieList, errorMessage, isLoading, currentPage, pageSize} : P
       <h2>Popular</h2>
       {movieList.length <=0 && <h2 className="w-full text-5xl">Not Found</h2>}
       {isLoading ? (
-        <p className="w-full text-5xl">Loading...</p>
+        <Spinner/>
       ) : errorMessage ? (
         <p>{errorMessage}</p>
       ) : (
