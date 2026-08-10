@@ -1,5 +1,4 @@
 import type { Movie } from "../components/Popular";
-import posterPlaceholder from "../assets/images/modal-movie-poster.png";
 import { memo } from "react";
 
 interface MovieCardProps {
