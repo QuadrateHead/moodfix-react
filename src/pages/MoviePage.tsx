@@ -211,7 +211,7 @@ export default function MoviePage() {
               {showTrailer && trailerUrl ? (
                 <iframe
                   className="w-full h-[441px] rounded-xl shadow-2xl"
-                  src={`${trailerUrl}&controls=0&modestbranding=1&fs=1&iv_load_policy=3&playsinline=1&vq=hd1080`}
+                  src={`${trailerUrl}&vq=hd1080`}
                   title={`${movieDetails.title} Trailer`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
