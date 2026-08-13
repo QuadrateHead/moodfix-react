@@ -1,48 +1,71 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
+import { useAuth } from '../context/AuthContext';
 import FormField from '../elements/FormField';
 
-export default function SignInPage() {
-  const [emailOrName, setEmailOrName] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+type SignInFormValues = {
+  emailOrName: string;
+  password: string;
+};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
-    // UI-only: no authentication logic implemented here.
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setError('Authentication not implemented in UI-only mode.');
-    }, 700);
+export default function SignInPage() {
+  const navigate = useNavigate();
+  const { signIn } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+  } = useForm<SignInFormValues>({
+    defaultValues: {
+      emailOrName: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = async (values: SignInFormValues) => {
+    const result = await signIn(values);
+
+    if (!result.ok) {
+      setError('root', { message: result.message ?? 'Invalid credentials.' });
+      return;
+    }
+
+    navigate('/');
   };
 
   return (
     <AuthLayout title="Sign In">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <FormField
           label="Email or Name"
-          name="emailOrName"
           placeholder="you@example.com or your name"
-          value={emailOrName}
-          onChange={(e) => setEmailOrName(e.target.value)}
-          required
+          {...register('emailOrName', {
+            required: 'Email or name is required.',
+            minLength: {
+              value: 2,
+              message: 'Email or name is too short.',
+            },
+          })}
+          error={errors.emailOrName?.message}
         />
 
         <FormField
           label="Password"
-          name="password"
           type="password"
           placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          {...register('password', {
+            required: 'Password is required.',
+            minLength: {
+              value: 6,
+              message: 'Password must be at least 6 characters.',
+            },
+          })}
+          error={errors.password?.message}
         />
 
-        {error && <p className="text-sm text-red-400 mb-3">{error}</p>}
+        {errors.root && <p className="text-sm text-red-400 mb-3">{errors.root.message}</p>}
 
         <div className="flex items-center justify-between gap-4">
           <button
