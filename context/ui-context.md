@@ -4,6 +4,22 @@
 
 Use Figma file by this path: https://www.figma.com/design/eo1tZ4KuuWzJWGPhdqjJa5/Movie-App-w_-React?node-id=2-2. And follow this rules carefully, using pixel perfect approach.
 
+## Figma using
+
+Read the Figma node [INSERT NODE ID] using the Figma MCP server. Convert this exact node into a functional React component using Tailwind CSS.
+
+Strict Pixel-Perfect Rules:
+
+    Do not estimate: Extract the exact hex codes, padding, margin, width, height, and border-radius from the Figma node properties.
+
+    Arbitrary Tailwind Values: If a Figma value does not perfectly match a standard Tailwind utility (e.g., if padding is 15px instead of 16px), you MUST use Tailwind arbitrary values (e.g., p-[15px], text-[17px], bg-[#1A1A24]) to ensure 1:1 pixel perfection.
+
+    Flexbox & Grid: Mirror Figma's Auto Layout perfectly. If the layout is vertical with an 18px gap, output flex flex-col gap-[18px].
+
+    Typography: Pay exact attention to line-height and letter-spacing (tracking). Use arbitrary values for these as well (e.g., leading-[24px]).
+
+    Component Structure: Write the code as a clean, functional React component with clearly named wrappers.
+
 ## Theme
 
 [Dark only. No light mode. The design language is a dark, cinematic movie-discovery workspace — near-black background with a faint purple wash, layered card surfaces one or two steps lighter than the background, a primary purple accent used sparingly (headline highlight, logo, active state), and a secondary pink/magenta accent used for the primary call-to-action button on the detail page.]

@@ -20,6 +20,9 @@ Update this file after every meaningful implementation change.
 - Added navigation logic to `MovieCard` and `TrendingCard`.
 - Optimized re-renders for `Popular.tsx` by wrapping `MovieCard` in `React.memo`, consolidating fetch state in `HomePage.tsx`, and using stable `EMPTY_MOVIES` array constant reference.
 
+- Added Auth UI: `SignInPage`, `SignUpPage`, `AuthLayout`, and `FormField`.
+- Added routes for `/login` and `/signup` in `src/App.tsx`.
+
 
 ## In Progress
 
@@ -48,3 +51,15 @@ Update this file after every meaningful implementation change.
 - Do not mark a phase "Completed" while `current-issues.md` still has
   unresolved entries — clear that file (or move entries here as
   Completed) before flipping this status.
+
+- Dev routing note: the app uses `HashRouter` (see `src/App.tsx`). Use
+  hash-based URLs in development, for example:
+
+  - `http://localhost:5173/#/signup` to open the Sign Up page
+  - `http://localhost:5173/#/login` to open the Sign In page
+
+  Visiting `http://localhost:5173/signup` (no `#`) will load the
+  default route because `HashRouter` ignores the pathname. If you
+  prefer clean URLs (`/signup`), switch to `BrowserRouter` and
+  ensure the dev/production server is configured to serve
+  `index.html` for client-side routes.
