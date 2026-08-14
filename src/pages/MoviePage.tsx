@@ -203,11 +203,17 @@ export default function MoviePage() {
 
           {/* Media Gallery Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-            <div className="lg:col-span-1">
+            <div className="relative lg:col-span-1">
               <img
                 src={posterPath}
                 alt={`${movieDetails.title} Poster`}
-                className="w-full h-[441px] object-cover rounded-xl shadow-2xl"
+                className="w-full h-[441px] blur-sm object-cover rounded-xl shadow-2xl"
+              />
+              <img
+                src={posterPath}
+                alt={`${movieDetails.title} Poster`}
+                className=" absolute top-1/2 left-1/2 -translate-1/2 scale-[102%] h-[441px] 
+                object-contain rounded-xl"
               />
             </div>
             <div className="lg:col-span-2 relative">
