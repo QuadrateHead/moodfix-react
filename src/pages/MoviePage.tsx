@@ -4,6 +4,7 @@ import arrowRightIcon from "../assets/arrow-right-icon.svg";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Spinner from "../elements/Spinner";
+import LogoutButton from "../components/LogoutButton";
 
 interface Genre {
   id: number;
@@ -154,6 +155,8 @@ export default function MoviePage() {
 
   return (
     <main className="movie-detail-page">
+      <LogoutButton />
+
       {/* Back Button */}
       <button onClick={handleBack} className="back-button">
         <svg

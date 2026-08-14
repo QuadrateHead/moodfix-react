@@ -22,6 +22,17 @@ Update this file after every meaningful implementation change.
 
 - Added Auth UI: `SignInPage`, `SignUpPage`, `AuthLayout`, and `FormField`.
 - Added routes for `/login` and `/signup` in `src/App.tsx`.
+- Implemented auth functionality using localStorage, React Hook Form, and AuthContext:
+  - Created `src/context/AuthContext.tsx` with sign up, sign in, and logout logic
+  - Created `src/components/ProtectedRoute.tsx` and `src/components/PublicRoute.tsx` for route guards
+  - Integrated React Hook Form into `SignInPage` and `SignUpPage` for client-side validation
+  - Updated `src/App.tsx` to wrap routes with auth guards and AuthProvider
+  - Added password hashing using Web Crypto API
+- Added logout button with Lucide React icon to HomePage and MoviePage:
+  - Fixed position in top-right corner (15px margins)
+  - Calls logout and redirects to `/login`
+  - Light text color matching theme
+- Installed lucide-react package for icon library
 
 
 ## In Progress

@@ -4,6 +4,7 @@ import Trending from '../components/Trending';
 import Popular from '../components/Popular';
 import type { Movie } from '../components/Popular';
 import Pagination from '../components/Pagination';
+import LogoutButton from '../components/LogoutButton';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from "@uidotdev/usehooks";
 import { getTrendingMovies, updateSearchCount } from '../lib/appwrite';
@@ -138,6 +139,8 @@ export default function HomePage() {
 
   return (
     <main>
+      <LogoutButton />
+
       <div className="wrapper">
         {/* Logo — centred at very top, alone */}
         <header>
