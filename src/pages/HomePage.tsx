@@ -2,17 +2,13 @@ import logoSvg from '../assets/logo.svg';
 import Hero from '../components/Hero';
 import Trending from '../components/Trending';
 import Popular from '../components/Popular';
-import type { Movie } from '../components/Popular';
 import Pagination from '../components/Pagination';
 import LogoutButton from '../components/LogoutButton';
 import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from "@uidotdev/usehooks";
-import { getTrendingMovies, updateSearchCount } from '../lib/appwrite';
-import type { MetricsRow } from '../lib/appwrite'; 
+import { fetchMovies, fetchTrendingMovies, saveSearchCount, type Movie } from '../lib/api';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const API_BASE_URL = 'https://api.themoviedb.org/3';
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const isTmdbConfigured = Boolean(API_KEY);
 
 const EMPTY_MOVIES: Movie[] = [];
 
@@ -24,28 +20,41 @@ interface MoviesState {
 
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
-
-  const [moviesState, setMoviesState] = useState<MoviesState>({
-    movies: EMPTY_MOVIES,
-    isLoading: false,
-    errorMessage: '',
-  });
+  const queryClient = useQueryClient();
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const [trendingMovies, setTrendingMovies] = useState<MetricsRow[]>([]);
+  const trendingQuery = useQuery({
+    queryKey: ["trendingMovies"],
+    queryFn: fetchTrendingMovies,
+    staleTime: 60 * 1000 * 3,
+  });
+  const searchCountMutation = useMutation({
+    mutationFn: ({ searchTerm, movie }: { searchTerm: string; movie: Movie }) =>
+      saveSearchCount(searchTerm, movie),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trendingMovies"] });
+    },
+  });
+
+
   const [pageSize, setPageSize] = useState<number>(12);
   
-  const fetchData = useCallback(async (query: string) => {
+  const moviesQuery = useQuery({
+    queryKey: ["movieList", debouncedSearchTerm],
+    queryFn: () => fetchMovies(debouncedSearchTerm),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+   placeholderData: keepPreviousData
+  })
+
+  {/*const fetchData = useCallback(async (query: string) => {
     setMoviesState((prev) => ({
       ...prev,
       isLoading: true,
       errorMessage: '',
     }));
     try {
-      if (!isTmdbConfigured) {
-        throw new Error('TMDB API key is not configured. Please add VITE_TMDB_API_KEY.');
-      }
       const endpoint = query
         ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
         : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
@@ -74,7 +83,10 @@ export default function HomePage() {
         errorMessage: '',
       });
       if (query && data.results.length > 0) {
-        await updateSearchCount(query, data.results[0]);
+        searchCountMutation.mutate({ 
+          searchTerm: query, 
+          movie: data.results[0] 
+        });
         setCurrentPage(1);
       }
     } catch (error) {
@@ -85,23 +97,21 @@ export default function HomePage() {
         errorMessage: error instanceof Error ? error.message : 'Failed to fetch movies',
       });
     }
-  }, []);
+  }, []);*/}
   
-  const loadTrendingMovies = useCallback(async () => {
-    try {
-      const movies = await getTrendingMovies();
-      setTrendingMovies(movies);
-    } catch (error) {
-      console.error(`Error fetching trending movies: ${error}`);
+  useEffect(() => {
+    if (debouncedSearchTerm && moviesQuery.data && moviesQuery.data.length > 0) {
+      searchCountMutation.mutate({
+        searchTerm: debouncedSearchTerm,
+        movie: moviesQuery.data[0],
+      });
+      setCurrentPage(1);
     }
-  }, []);
-  useEffect(() => {
-    loadTrendingMovies();
-  }, []);
+  }, [debouncedSearchTerm, moviesQuery.data]);
 
-  useEffect(() => {
-    fetchData(debouncedSearchTerm);
-  }, [debouncedSearchTerm]);
+  const movies = moviesQuery.data ?? EMPTY_MOVIES;
+  const isLoading = moviesQuery.isLoading;
+  const errorMessage = moviesQuery.error instanceof Error ? moviesQuery.error.message : '';
 
   useEffect(() => {
     const updatePageSize = () => {
@@ -117,13 +127,13 @@ export default function HomePage() {
       }
     };
 
-    updatePageSize();
+  updatePageSize();
     window.addEventListener('resize', updatePageSize);
     return () => window.removeEventListener('resize', updatePageSize);
   }, []);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPages = Math.max(Math.ceil(moviesState.movies.length / pageSize), 1);
+  const totalPages = Math.max(Math.ceil(movies.length / pageSize), 1);
 
   const movePagePrev = useCallback(() => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
@@ -151,13 +161,13 @@ export default function HomePage() {
         <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
 
         {/* Trending: 6 numbered horizontal thumbnails */}
-        <Trending trendingMovies = {trendingMovies}/>
+        <Trending trendingMovies = {trendingQuery.data || []}/>
 
         {/* Popular: 4-col × 3-row movie grid */}
         <Popular
-          movieList={moviesState.movies}
-          errorMessage={moviesState.errorMessage}
-          isLoading={moviesState.isLoading}
+          movieList={movies}
+          errorMessage={errorMessage}
+          isLoading={isLoading}
           currentPage={currentPage}
           pageSize={pageSize}
         />

@@ -1,5 +1,6 @@
-import type { Movie } from "../components/Popular";
+
 import { memo } from "react";
+import type { Movie } from "../lib/api";
 
 interface MovieCardProps {
   movie: Movie;

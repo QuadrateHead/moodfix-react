@@ -3,15 +3,9 @@ import MovieCard from "../elements/MovieCard";
 import { memo } from "react";
 import { updateSearchCount } from "../lib/appwrite";
 import Spinner from "../elements/Spinner";
+import type { Movie } from "../lib/api";
 
-export interface Movie {
-  id: number;
-  title: string;
-  release_date: string;
-  vote_average: number;
-  original_language: string;
-  poster_path: string;
-}
+
 interface PopularProps {
   movieList: Movie[]
   errorMessage: string

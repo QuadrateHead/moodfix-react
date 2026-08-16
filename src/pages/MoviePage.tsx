@@ -5,77 +5,24 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Spinner from "../elements/Spinner";
 import LogoutButton from "../components/LogoutButton";
-
-interface Genre {
-  id: number;
-  name: string;
-}
-
-interface ProductionCompany {
-  id: number;
-  name: string;
-}
-
-interface ProductionCountry {
-  iso_3166_1: string;
-  name: string;
-}
-
-interface SpokenLanguage {
-  english_name: string;
-  iso_639_1: string;
-  name: string;
-}
-
-interface VideoResult {
-  id: string;
-  key: string;
-  name: string;
-  site: string;
-  type: string;
-}
-
-interface MovieDetails {
-  adult?: boolean;
-  backdrop_path?: string | null;
-  genres?: Genre[];
-  homepage?: string;
-  id: number;
-  imdb_id?: string;
-  original_language?: string;
-  original_title?: string;
-  overview?: string;
-  popularity?: number;
-  poster_path?: string | null;
-  production_companies?: ProductionCompany[];
-  production_countries?: ProductionCountry[];
-  release_date?: string;
-  revenue?: number;
-  runtime?: number;
-  spoken_languages?: SpokenLanguage[];
-  status?: string;
-  tagline?: string;
-  title: string;
-  vote_average?: number;
-  vote_count?: number;
-  budget?: number;
-  videos?: {
-    results: VideoResult[];
-  };
-}
+import { fetchMovieById } from "../lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MoviePage() {
   const navigate = useNavigate();
   const handleBack = () => {
     navigate("/");
   };
-  const { id } = useParams<{ id: string }>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
+  const { id } = useParams<{ id: string}>();
   const [showTrailer, setShowTrailer] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
+  const { data: movieDetails, isLoading, isError, error } = useQuery({
+    queryKey: ["movieDetails", id],
+    queryFn: () => fetchMovieById(id!),
+    enabled: !!id,
+  });
+
+  {/*useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
         const apiKey = import.meta.env.VITE_TMDB_API_KEY;
@@ -92,17 +39,15 @@ export default function MoviePage() {
           }
         );
         const data = await response.json();
-        setMovieDetails(data);
       } catch (error) {
         console.error("Error fetching movie details:", error);
       } finally {
-        setIsLoading(false);
       }
     };
     if (id) {
       fetchMovieDetails();
     }
-  }, [id]);
+  }, [id]);*/}
 
   useEffect(() => {
     setShowTrailer(false);
@@ -153,6 +98,10 @@ export default function MoviePage() {
   const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?rel=0&autoplay=1` : null;
   const hasTrailer = Boolean(trailerUrl);
 
+
+  if (isError) {
+    return <div>Error: {error?.message}</div>;
+  }
   return (
     <main className="movie-detail-page">
       <LogoutButton />
