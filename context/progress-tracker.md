@@ -33,6 +33,16 @@ Update this file after every meaningful implementation change.
   - Calls logout and redirects to `/login`
   - Light text color matching theme
 - Installed lucide-react package for icon library
+- Added Zod validation schemas for TMDB movie list and movie detail
+  responses in `src/lib/api.ts`, with `Movie` and `MovieDetails`
+  types inferred from schemas.
+- Integrated validated API results into `HomePage` and `MoviePage`
+  React Query flows, including clearer error states when API response
+  parsing fails.
+- Replaced the default Vite README with a full project report covering
+  the project idea, detailed features, stack table, routes,
+  configuration, structure, development commands, and future
+  improvement ideas.
 
 
 ## In Progress
