@@ -53,12 +53,24 @@ export default function MoviePage() {
     setShowTrailer(false);
   }, [id]);
 
-  if (!movieDetails || isLoading) {
+  if (!id) {
+    return <div>Movie id is missing.</div>;
+  }
+
+  if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center">
         <Spinner />
       </div>
     );
+  }
+
+  if (isError) {
+    return <div>Error: {error?.message}</div>;
+  }
+
+  if (!movieDetails) {
+    return <div>Movie details not found.</div>;
   }
 
   const backdropPath = movieDetails.backdrop_path
@@ -74,34 +86,30 @@ export default function MoviePage() {
         year: "numeric",
       })
     : "Unknown";
-  const countryNames = movieDetails.production_countries?.map((country) => country.name) ?? [];
-  const languageNames = movieDetails.spoken_languages?.map(
+  const countryNames = movieDetails.production_countries.map((country) => country.name);
+  const languageNames = movieDetails.spoken_languages.map(
     (lang) => lang.english_name || lang.name || lang.iso_639_1
-  ) ?? [];
+  );
   const runtimeLabel = movieDetails.runtime
     ? `${Math.floor(movieDetails.runtime / 60)}h ${movieDetails.runtime % 60}m`
     : "N/A";
-  const ratingLabel = movieDetails.vote_average !== undefined
+  const ratingLabel = movieDetails.vote_average > 0
     ? `${movieDetails.vote_average.toFixed(1)} / 10 (${movieDetails.vote_count?.toLocaleString() ?? "N/A"})`
     : "N/A";
-  const budgetLabel = movieDetails.budget !== undefined
+  const budgetLabel = movieDetails.budget > 0
     ? `$${movieDetails.budget.toLocaleString()}`
     : "N/A";
-  const revenueLabel = movieDetails.revenue !== undefined
+  const revenueLabel = movieDetails.revenue > 0
     ? `$${movieDetails.revenue.toLocaleString()}`
     : "N/A";
-  const genreTags = movieDetails.genres?.length ? movieDetails.genres : [];
-  const companyNames = movieDetails.production_companies?.map((company) => company.name) ?? [];
-  const trailer = movieDetails.videos?.results.find(
+  const genreTags = movieDetails.genres;
+  const companyNames = movieDetails.production_companies.map((company) => company.name);
+  const trailer = movieDetails.videos.results.find(
     (video) => video.site === "YouTube" && video.type === "Trailer"
   );
   const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?rel=0&autoplay=1` : null;
   const hasTrailer = Boolean(trailerUrl);
 
-
-  if (isError) {
-    return <div>Error: {error?.message}</div>;
-  }
   return (
     <main className="movie-detail-page">
       <LogoutButton />
@@ -131,7 +139,7 @@ export default function MoviePage() {
             <div>
               <h1>{movieDetails.title}</h1>
               <div className="meta-info">
-                <span className="pill">{movieDetails.release_date?.slice(0, 4) ?? "N/A"}</span>
+                <span className="pill">{movieDetails.release_date.slice(0, 4) || "N/A"}</span>
                 <span className="pill">{movieDetails.adult ? "18+" : "PG-13"}</span>
                 <span className="pill">{runtimeLabel}</span>
               </div>
@@ -226,7 +234,7 @@ export default function MoviePage() {
             <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
               <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Overview</span>
               <p className="text-white md:flex-1 text-left leading-relaxed">
-                {movieDetails.overview ?? "No overview available."}
+                {movieDetails.overview || "No overview available."}
               </p>
             </div>
 
@@ -257,7 +265,7 @@ export default function MoviePage() {
             <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
               <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Status</span>
               <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">
-                {movieDetails.status ?? "Unknown"}
+                {movieDetails.status || "Unknown"}
               </span>
             </div>
 
@@ -272,7 +280,7 @@ export default function MoviePage() {
                     ) : null,
                   ])
                 ) : (
-                  <span>{movieDetails.original_language ?? "N/A"}</span>
+                  <span>{movieDetails.original_language || "N/A"}</span>
                 )}
               </div>
             </div>
@@ -290,7 +298,7 @@ export default function MoviePage() {
             <div className="flex flex-col md:flex-row md:items-start md:justify-start gap-4 w-full">
               <span className="text-light-200 font-medium md:w-[25%] md:max-w-[25%] text-left">Tagline</span>
               <span className="text-[#D6C7FF] md:flex-1 text-left font-semibold">
-                {movieDetails.tagline ?? "No tagline available."}
+                {movieDetails.tagline || "No tagline available."}
               </span>
             </div>
 

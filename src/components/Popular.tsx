@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import MovieCard from "../elements/MovieCard";
 import { memo } from "react";
 import { updateSearchCount } from "../lib/appwrite";
-import Spinner from "../elements/Spinner";
 import type { Movie } from "../lib/api";
 
 

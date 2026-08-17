@@ -1,5 +1,5 @@
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
-import * as z from "zod"
+import * as z from "zod";
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -11,68 +11,75 @@ export const MovieSchema = z.object({
   vote_average: z.number().optional().default(0),
   original_language: z.string().optional().default('en'),
   poster_path: z.string().nullable().optional().default(null),
-})
+});
 
 const MoviesResponseSchema = z.object({
   results: z.array(MovieSchema).default([]),
 });
 
-export type Movie = z.infer<typeof MovieSchema>
+export type Movie = z.infer<typeof MovieSchema>;
 
-interface Genre {
-  id: number;
-  name: string;
-}
-interface ProductionCompany {
-  id: number;
-  name: string;
-}
-interface ProductionCountry {
-  iso_3166_1: string;
-  name: string;
-}
-interface SpokenLanguage {
-  english_name: string;
-  iso_639_1: string;
-  name: string;
-}
-interface VideoResult {
-  id: string;
-  key: string;
-  name: string;
-  site: string;
-  type: string;
-}
-export interface MovieDetails {
-  adult?: boolean;
-  backdrop_path?: string | null;
-  genres?: Genre[];
-  homepage?: string;
-  id: number;
-  imdb_id?: string;
-  original_language?: string;
-  original_title?: string;
-  overview?: string;
-  popularity?: number;
-  poster_path?: string | null;
-  production_companies?: ProductionCompany[];
-  production_countries?: ProductionCountry[];
-  release_date?: string;
-  revenue?: number;
-  runtime?: number;
-  spoken_languages?: SpokenLanguage[];
-  status?: string;
-  tagline?: string;
-  title: string;
-  vote_average?: number;
-  vote_count?: number;
-  budget?: number;
-  videos?: {
-    results: VideoResult[];
-  };
-}
+export const GenreSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
 
-async function tmdbFetch<T>(url: string): Promise<T> {
+export const ProductionCompanySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+
+export const ProductionCountrySchema = z.object({
+  iso_3166_1: z.string(),
+  name: z.string(),
+});
+
+export const SpokenLanguageSchema = z.object({
+  english_name: z.string().optional().default(''),
+  iso_639_1: z.string().optional().default(''),
+  name: z.string().optional().default(''),
+});
+
+export const VideoResultSchema = z.object({
+  id: z.string(),
+  key: z.string(),
+  name: z.string(),
+  site: z.string(),
+  type: z.string(),
+});
+
+export const MovieDetailsSchema = z.object({
+  adult: z.boolean().optional().default(false),
+  backdrop_path: z.string().nullable().optional().default(null),
+  genres: z.array(GenreSchema).optional().default([]),
+  homepage: z.string().nullable().optional().default(null),
+  id: z.number(),
+  imdb_id: z.string().nullable().optional().default(null),
+  original_language: z.string().optional().default(''),
+  original_title: z.string().optional().default(''),
+  overview: z.string().optional().default(''),
+  popularity: z.number().optional().default(0),
+  poster_path: z.string().nullable().optional().default(null),
+  production_companies: z.array(ProductionCompanySchema).optional().default([]),
+  production_countries: z.array(ProductionCountrySchema).optional().default([]),
+  release_date: z.string().optional().default(''),
+  revenue: z.number().optional().default(0),
+  runtime: z.number().nullable().optional().default(null),
+  spoken_languages: z.array(SpokenLanguageSchema).optional().default([]),
+  status: z.string().optional().default(''),
+  tagline: z.string().optional().default(''),
+  title: z.string(),
+  vote_average: z.number().optional().default(0),
+  vote_count: z.number().optional().default(0),
+  budget: z.number().optional().default(0),
+  videos: z.object({
+    results: z.array(VideoResultSchema).optional().default([]),
+  }).optional().default({ results: [] }),
+});
+
+export type MovieDetails = z.infer<typeof MovieDetailsSchema>;
+
+async function tmdbFetch(url: string): Promise<unknown> {
   if (!API_KEY) {
     throw new Error("TMDB API key is not configured. Please add VITE_TMDB_API_KEY.");
   }
@@ -88,7 +95,7 @@ async function tmdbFetch<T>(url: string): Promise<T> {
     throw new Error("Failed to fetch TMDB data");
   }
 
-  return response.json() as Promise<T>;
+  return response.json();
 }
 
 export async function fetchMovies(query?: string): Promise<Movie[]> {
@@ -96,15 +103,18 @@ export async function fetchMovies(query?: string): Promise<Movie[]> {
     ? `/search/movie?query=${encodeURIComponent(query)}`
     : `/discover/movie?sort_by=popularity.desc`;
 
-  const data = await tmdbFetch<{ results: Movie[] }>(endpoint);
+  const data = await tmdbFetch(endpoint);
   const parsed = MoviesResponseSchema.parse(data);
+
   return parsed.results;
 }
 
 export async function fetchMovieById(id: string): Promise<MovieDetails> {
-  return tmdbFetch<MovieDetails>(
+  const data = await tmdbFetch(
     `/movie/${id}?append_to_response=videos,credits,similar`
   );
+
+  return MovieDetailsSchema.parse(data);
 }
 
 export async function fetchTrendingMovies(){

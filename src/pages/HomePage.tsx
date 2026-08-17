@@ -13,12 +13,6 @@ import Spinner from '../elements/Spinner';
 
 const EMPTY_MOVIES: Movie[] = [];
 
-interface MoviesState {
-  movies: Movie[];
-  isLoading: boolean;
-  errorMessage: string;
-}
-
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const queryClient = useQueryClient();
@@ -170,10 +164,10 @@ export default function HomePage() {
                 </li>
               ))}
             </ul>
-          ) : movies.length === 0 ? (
-            <h2 className="w-full text-5xl">Not Found</h2>
           ) : errorMessage ? (
             <p className="text-red-500">{errorMessage}</p>
+          ) : movies.length === 0 ? (
+            <h2 className="w-full text-5xl">Not Found</h2>
           ) : (
             <Popular
               movieList={movies}
