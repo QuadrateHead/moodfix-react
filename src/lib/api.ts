@@ -1,17 +1,23 @@
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
+import * as z from "zod"
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-export interface Movie {
-  id: number;
-  title: string;
-  release_date: string;
-  vote_average: number;
-  original_language: string;
-  poster_path: string;
-}
+export const MovieSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  release_date: z.string().optional().default(''),
+  vote_average: z.number().optional().default(0),
+  original_language: z.string().optional().default('en'),
+  poster_path: z.string().nullable().optional().default(null),
+})
 
+const MoviesResponseSchema = z.object({
+  results: z.array(MovieSchema).default([]),
+});
+
+export type Movie = z.infer<typeof MovieSchema>
 
 interface Genre {
   id: number;
@@ -91,7 +97,8 @@ export async function fetchMovies(query?: string): Promise<Movie[]> {
     : `/discover/movie?sort_by=popularity.desc`;
 
   const data = await tmdbFetch<{ results: Movie[] }>(endpoint);
-  return data.results ?? [];
+  const parsed = MoviesResponseSchema.parse(data);
+  return parsed.results;
 }
 
 export async function fetchMovieById(id: string): Promise<MovieDetails> {

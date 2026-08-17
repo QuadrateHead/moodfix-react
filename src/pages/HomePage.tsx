@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDebounce } from "@uidotdev/usehooks";
 import { fetchMovies, fetchTrendingMovies, saveSearchCount, type Movie } from '../lib/api';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Spinner from '../elements/Spinner';
 
 
 const EMPTY_MOVIES: Movie[] = [];
@@ -157,20 +158,31 @@ export default function HomePage() {
           <img src={logoSvg} alt="MoodFix logo" />
         </header>
 
-        {/* Hero: poster fan + headline + search */}
         <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
 
-        {/* Trending: 6 numbered horizontal thumbnails */}
         <Trending trendingMovies = {trendingQuery.data || []}/>
 
-        {/* Popular: 4-col × 3-row movie grid */}
-        <Popular
-          movieList={movies}
-          errorMessage={errorMessage}
-          isLoading={isLoading}
-          currentPage={currentPage}
-          pageSize={pageSize}
-        />
+        {isLoading && !movies.length ? (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {Array.from({ length: pageSize }).map((_, i) => (
+                <li className='w-full h-full flex items-center justify-center' key={i}>
+                  <Spinner />
+                </li>
+              ))}
+            </ul>
+          ) : movies.length === 0 ? (
+            <h2 className="w-full text-5xl">Not Found</h2>
+          ) : errorMessage ? (
+            <p className="text-red-500">{errorMessage}</p>
+          ) : (
+            <Popular
+              movieList={movies}
+              errorMessage={errorMessage}
+              isLoading={isLoading}
+              currentPage={currentPage}
+              pageSize={pageSize}
+            />
+          )}
 
         {/* Pagination: centred left-arrow / current of total / right-arrow */}
         <div className="mt-12">

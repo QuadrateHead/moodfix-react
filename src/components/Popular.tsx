@@ -13,25 +13,18 @@ interface PopularProps {
   currentPage: number
   pageSize: number
 }
-function Popular({movieList, errorMessage, isLoading, currentPage, pageSize} : PopularProps) {
+function Popular({movieList, currentPage, pageSize} : PopularProps) {
   
   return (
     <section className="all-movies">
       <h2>Popular</h2>
-      {movieList.length <=0 && <h2 className="w-full text-5xl">Not Found</h2>}
-      {isLoading ? (
-        <Spinner/>
-      ) : errorMessage ? (
-        <p>{errorMessage}</p>
-      ) : (
-        <ul>
-          {movieList.slice(pageSize * (currentPage - 1), pageSize * currentPage).map((movie) => (
-            <Link onClick={() => updateSearchCount(movie.title, movie)} to={`/movie/${movie.id}`} key={movie.id}>
-              <MovieCard movie={movie} />
-            </Link>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {movieList.slice(pageSize * (currentPage - 1), pageSize * currentPage).map((movie) => (
+          <Link onClick={() => updateSearchCount(movie.title, movie)} to={`/movie/${movie.id}`} key={movie.id}>
+            <MovieCard movie={movie} />
+          </Link>
+        ))}
+      </ul>
     </section>
   );
 }
