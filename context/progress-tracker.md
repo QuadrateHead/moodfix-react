@@ -43,6 +43,8 @@ Update this file after every meaningful implementation change.
   the project idea, detailed features, stack table, routes,
   configuration, structure, development commands, and future
   improvement ideas.
+- Updated `index.html` to use the AVIF favicon asset instead of the
+  SVG favicon.
 
 
 ## In Progress
