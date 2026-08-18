@@ -64,6 +64,7 @@ The visual style is dark and cinematic. Posters, backdrops, ranking cards, badge
 | LocalStorage | Stores demo user accounts and the active session for the current frontend-only auth implementation. |
 | Lucide React | Provides icon components for interface actions such as logout and other UI controls. |
 | ESLint | Helps maintain code quality and consistent TypeScript/React rules during development. |
+| shadcn/ui | Helps to implement the Select UI component |
 
 ## Routes
 
