@@ -45,6 +45,21 @@ Update this file after every meaningful implementation change.
   improvement ideas.
 - Updated `index.html` to use the AVIF favicon asset instead of the
   SVG favicon.
+- Installed shadcn/ui with the Vega preset and added the Select
+  primitive:
+  - Configured `@/*` import aliases in TypeScript and Vite.
+  - Added `components.json`, `src/components/ui/select.tsx`,
+    generated shadcn support files, and required dependencies.
+  - Preserved the app's existing dark movie theme and DM Sans font
+    while adding shadcn design tokens needed by Select.
+  - Cleaned up the placeholder `MovieListSelect` component so strict
+    TypeScript builds pass.
+- Updated shadcn/ui design tokens in `src/index.css` to use the
+  movie app's existing dark theme colors, translucent lavender
+  surfaces, and light text treatment without changing unrelated page
+  styles.
+- Fixed the movie-list Select's selected-value foreground so it stays
+  legible against the dark trigger surface.
 
 
 ## In Progress

@@ -1,14 +1,19 @@
 
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import type { Movie } from "../lib/api";
+import { updateSearchCount } from "@/lib/appwrite";
+import { Link } from "react-router-dom";
 
 interface MovieCardProps {
   movie: Movie;
 }
 
 function MovieCard({ movie }: MovieCardProps) {
+  const handleClick = useCallback(() => {
+    updateSearchCount(movie.title, movie)
+  }, [movie])
   return (
-    <div className="movie-card cursor-pointer">
+    <Link className="movie-card cursor-pointer" onClick={handleClick} to={`/movie/${movie.id}`}>
       <div className="poster">
         {movie.poster_path ? (
           <img
@@ -17,7 +22,7 @@ function MovieCard({ movie }: MovieCardProps) {
           />
         ) : (
           <div className="flex items-center justify-center 
-          w-full h-[400px] object-cover rounded-lg transition-transform duration-300;
+          w-full h-[400px] object-cover rounded-lg transition-transform duration-300
            bg-no-poster text-primary">
             <h2>Poster Not Available</h2>
           </div>
@@ -38,7 +43,7 @@ function MovieCard({ movie }: MovieCardProps) {
           <span className="lang">{movie.original_language}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

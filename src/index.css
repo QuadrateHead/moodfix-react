@@ -2,6 +2,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --color-primary: #030014;
@@ -52,6 +56,9 @@
 
   header img {
     @apply w-[91px] h-auto mx-auto drop-shadow-md;
+  }
+  * {
+    @apply border-border outline-ring/50;
   }
 }
 
@@ -104,7 +111,7 @@
 
     & h2 {
       @apply flex items-center justify-between;
-      
+
       & .view-all {
         @apply text-sm text-light-200 hover:text-white transition-colors;
       }
@@ -277,7 +284,7 @@
 
       & .pill {
         @apply px-4 py-1.5 rounded-full bg-light-100/10 text-light-100 text-sm font-medium;
-        
+
         &.rating {
           @apply flex items-center gap-1.5 bg-yellow-500/20 text-yellow-400;
         }
@@ -305,7 +312,7 @@
 
       & .cast-item {
         @apply flex flex-col items-center gap-2 text-center;
-        
+
         & span {
           @apply text-sm text-light-200 max-w-[100px] truncate;
         }
@@ -388,7 +395,6 @@
   }
 }
 
-
 @utility text-gradient {
   @apply bg-linear-to-r from-[#D6C7FF] to-[#AB8BFF] bg-clip-text text-transparent;
 }
@@ -406,4 +412,79 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: var(--color-primary);
+  --foreground: var(--color-light-100);
+  --card: var(--color-dark-100);
+  --card-foreground: white;
+  --popover: var(--color-dark-100);
+  --popover-foreground: white;
+  --primary: var(--color-light-100);
+  --primary-foreground: var(--color-dark-100);
+  --secondary: var(--color-no-poster);
+  --secondary-foreground: var(--color-light-100);
+  --muted: rgb(from var(--color-light-100) r g b / 0.05);
+  --muted-foreground: var(--color-light-200);
+  --accent: rgb(from var(--color-light-100) r g b / 0.1);
+  --accent-foreground: var(--color-light-100);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgb(from var(--color-light-100) r g b / 0.1);
+  --input: rgb(from var(--color-light-100) r g b / 0.15);
+  --ring: var(--color-light-100);
+  --chart-1: var(--color-light-100);
+  --chart-2: var(--color-light-200);
+  --chart-3: var(--color-no-poster);
+  --chart-4: var(--color-dark-100);
+  --chart-5: var(--color-gray-100);
+  --sidebar: var(--color-dark-100);
+  --sidebar-foreground: white;
+  --sidebar-primary: var(--color-light-100);
+  --sidebar-primary-foreground: var(--color-dark-100);
+  --sidebar-accent: rgb(from var(--color-light-100) r g b / 0.1);
+  --sidebar-accent-foreground: var(--color-light-100);
+  --sidebar-border: rgb(from var(--color-light-100) r g b / 0.1);
+  --sidebar-ring: var(--color-light-100);
 }

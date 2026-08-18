@@ -45,6 +45,9 @@
 
 - `/src/components` — page-level and section components (`HomePage`,
   `MoviePage`, `Hero`, `Trending`, `Popular`, `Pagination`)
+- `/src/components/ui` — generated shadcn/ui primitives. Keep these
+  focused on library-level primitives and avoid hand-editing generated
+  internals unless required for project compatibility.
 - `/src/elements` — reusable, composable UI pieces (`MovieCard`,
   `TrendingCard`, `Logo`)
 - `/src/assets/images` — static image assets (posters, backdrops,

@@ -1,6 +1,6 @@
 import { getTrendingMovies, updateSearchCount } from "./appwrite";
 import * as z from "zod";
-
+ 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -79,6 +79,7 @@ export const MovieDetailsSchema = z.object({
 
 export type MovieDetails = z.infer<typeof MovieDetailsSchema>;
 
+
 async function tmdbFetch(url: string): Promise<unknown> {
   if (!API_KEY) {
     throw new Error("TMDB API key is not configured. Please add VITE_TMDB_API_KEY.");
@@ -98,14 +99,15 @@ async function tmdbFetch(url: string): Promise<unknown> {
   return response.json();
 }
 
-export async function fetchMovies(query?: string): Promise<Movie[]> {
+export async function fetchMovies(query?: string, listMode?: string): Promise<Movie[]> {
   const endpoint = query
     ? `/search/movie?query=${encodeURIComponent(query)}`
-    : `/discover/movie?sort_by=popularity.desc`;
+    : `/movie/${listMode || "popular"}`;
 
   const data = await tmdbFetch(endpoint);
   const parsed = MoviesResponseSchema.parse(data);
 
+  console.log(parsed.results)
   return parsed.results;
 }
 

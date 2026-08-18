@@ -1,27 +1,33 @@
-import { Link } from "react-router-dom";
+
 import MovieCard from "../elements/MovieCard";
-import { memo } from "react";
-import { updateSearchCount } from "../lib/appwrite";
+import { memo, useMemo } from "react";
 import type { Movie } from "../lib/api";
+import MovieListSelect from "./MovieListSelect";
+import type { MovieListType } from "@/pages/HomePage";
 
 
 interface PopularProps {
   movieList: Movie[]
-  errorMessage: string
-  isLoading: boolean
   currentPage: number
   pageSize: number
+  listMode: MovieListType
+  handleListModeChange: (nextMode: MovieListType) => void
 }
-function Popular({movieList, currentPage, pageSize} : PopularProps) {
-  
+
+function Popular({movieList, currentPage, pageSize, listMode, handleListModeChange} : PopularProps) {
+  const visibleMovies = useMemo(
+    () => movieList.slice(pageSize * (currentPage - 1), pageSize * currentPage),
+    [movieList, currentPage, pageSize]
+  );
   return (
     <section className="all-movies">
-      <h2>Popular</h2>
+      <div className="flex items-center justify-between">
+        <h2 className = "capitalize" >{listMode.replace("_", " ")}</h2>
+        <MovieListSelect value={listMode} onValueChange={handleListModeChange}/>
+      </div>
       <ul>
-        {movieList.slice(pageSize * (currentPage - 1), pageSize * currentPage).map((movie) => (
-          <Link onClick={() => updateSearchCount(movie.title, movie)} to={`/movie/${movie.id}`} key={movie.id}>
-            <MovieCard movie={movie} />
-          </Link>
+        {visibleMovies.map((movie) => (
+          <MovieCard movie={movie} key={movie.id}/>
         ))}
       </ul>
     </section>
