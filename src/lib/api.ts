@@ -107,7 +107,6 @@ export async function fetchMovies(query?: string, listMode?: string): Promise<Mo
   const data = await tmdbFetch(endpoint);
   const parsed = MoviesResponseSchema.parse(data);
 
-  console.log(parsed.results)
   return parsed.results;
 }
 
