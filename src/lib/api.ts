@@ -102,7 +102,6 @@ async function tmdbFetch(url: string): Promise<unknown> {
   return response.json();
 }
 
-const MOVIES_PER_PAGE = 20;
 const PAGES_TO_FETCH = 6; // 5 * 20 = 100 movies
 
 function buildEndpoint(query: string | undefined, listMode: string | undefined, page: number): string {
