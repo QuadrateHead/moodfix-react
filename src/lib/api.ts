@@ -14,7 +14,10 @@ export const MovieSchema = z.object({
 });
 
 const MoviesResponseSchema = z.object({
+  page: z.number().optional().default(1),
   results: z.array(MovieSchema).default([]),
+  total_pages: z.number().optional().default(1),
+  total_results: z.number().optional().default(0),
 });
 
 export type Movie = z.infer<typeof MovieSchema>;
@@ -99,15 +102,44 @@ async function tmdbFetch(url: string): Promise<unknown> {
   return response.json();
 }
 
+const MOVIES_PER_PAGE = 20;
+const PAGES_TO_FETCH = 6; // 5 * 20 = 100 movies
+
+function buildEndpoint(query: string | undefined, listMode: string | undefined, page: number): string {
+  return query
+    ? `/search/movie?query=${encodeURIComponent(query)}&page=${page}`
+    : `/movie/${listMode || "popular"}?page=${page}`;
+}
+
 export async function fetchMovies(query?: string, listMode?: string): Promise<Movie[]> {
-  const endpoint = query
-    ? `/search/movie?query=${encodeURIComponent(query)}`
-    : `/movie/${listMode || "popular"}`;
+  const firstEndpoint = buildEndpoint(query, listMode, 1);
+  const firstData = await tmdbFetch(firstEndpoint);
+  const firstParsed = MoviesResponseSchema.parse(firstData);
 
-  const data = await tmdbFetch(endpoint);
-  const parsed = MoviesResponseSchema.parse(data);
+  const pagesToFetch = Math.min(PAGES_TO_FETCH, firstParsed.total_pages);
 
-  return parsed.results;
+  const remainingPageNumbers = Array.from(
+    { length: Math.max(0, pagesToFetch - 1) },
+    (_, i) => i + 2
+  );
+
+  const remainingResults = await Promise.all(
+    remainingPageNumbers.map(async (page) => {
+      const data = await tmdbFetch(buildEndpoint(query, listMode, page));
+      return MoviesResponseSchema.parse(data).results;
+    })
+  );
+
+  const allResults = [firstParsed.results, ...remainingResults].flat();
+
+  const seen = new Set<number>();
+  const deduped = allResults.filter((movie) => {
+    if (seen.has(movie.id)) return false;
+    seen.add(movie.id);
+    return true;
+  });
+
+  return deduped;
 }
 
 export async function fetchMovieById(id: string): Promise<MovieDetails> {
