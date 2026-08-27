@@ -102,8 +102,6 @@ async function tmdbFetch(url: string): Promise<unknown> {
   return response.json();
 }
 
-const MOVIES_PER_PAGE = 20; // fixed by TMDB, not configurable
-
 function buildEndpoint(query: string | undefined, listMode: string | undefined, page: number): string {
   return query
     ? `/search/movie?query=${encodeURIComponent(query)}&page=${page}`

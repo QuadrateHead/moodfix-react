@@ -24,7 +24,7 @@ The visual style is dark and cinematic. Posters, backdrops, ranking cards, badge
   Users can search for movies by title from the home page. The search input is debounced, so the app waits briefly before requesting results instead of making a request on every keystroke. This improves performance and gives the interface a smoother feel during typing.
 
 - **Popular movie grid**
-  The home page displays a responsive grid of movies. On large screens it shows more cards per page, while smaller screens reduce the page size so the layout stays usable. Each movie card presents the core information needed for fast scanning, such as poster artwork, title, rating, language, and release year.
+  The home page displays a responsive grid of movies. On large screens it shows more cards per page, while smaller screens reduce the page size so the layout stays usable. Movie data is loaded incrementally from TMDB as the user browses further, rather than all at once. Each movie card presents the core information needed for fast scanning, such as poster artwork, title, rating, language, and release year.
 
 - **Trending movies section**
   The app tracks searched movies through Appwrite and displays trending results based on search count. When users search for a title and results are returned, the app can update the search count for the top result. Trending movies are then read back from Appwrite, sorted by popularity in the app's own search data.
@@ -42,7 +42,7 @@ The visual style is dark and cinematic. Posters, backdrops, ranking cards, badge
   The project follows a dark-only cinematic design system based on the provided Figma direction. The home page uses a centered logo, hero search section, trending row, popular grid, and pagination. The movie page uses a structured report-like layout with a header, media gallery, genre row, CTA, and detailed information list.
 
 - **Pagination**
-  Movie results are paginated on the client side. The current page, total pages, and navigation controls are shown below the popular grid. The page size adapts to screen width, keeping the browsing flow comfortable across desktop, tablet, and mobile layouts.
+  Movie results are paginated on the client side, with a page size that adapts to screen width so the browsing flow stays comfortable across desktop, tablet, and mobile layouts. Under the hood, TMDB pages (20 movies each) are fetched on demand through `useInfiniteQuery` — only as the user pages far enough to need movies that haven't been loaded yet — instead of pulling a large batch of movies upfront. Total page count is calculated from TMDB's reported result count, so navigation reflects the full dataset even before every page has been fetched.
 
 - **Logout support**
   Authenticated users can log out from the main app screens. Logging out clears the active local session and returns the user to the public authentication flow.
@@ -142,6 +142,9 @@ npm run preview
 
 - **Error and empty-state polish**
   Improve failed API states, missing poster states, unavailable trailer states, and loading skeletons so the app feels more complete under imperfect network conditions.
+
+- **Pagination fetch tuning**
+  Refine how local page size and TMDB's fixed 20-per-page boundary line up, so background page fetches trigger as late as possible without ever leaving the user waiting on an empty grid.
 
 - **Deployment workflow**
   Add a production deployment setup for GitHub Pages, Vercel, Netlify, or another static hosting provider with documented environment variable configuration.
