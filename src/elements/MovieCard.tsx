@@ -22,7 +22,7 @@ function MovieCard({ movie }: MovieCardProps) {
           />
         ) : (
           <div className="flex items-center justify-center 
-          w-full h-[400px] object-cover rounded-lg transition-transform duration-300
+          w-full h-100 object-cover rounded-lg transition-transform duration-300
            bg-no-poster text-primary">
             <h2>Poster Not Available</h2>
           </div>
