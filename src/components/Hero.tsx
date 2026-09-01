@@ -9,7 +9,6 @@ export default function Hero() {
   const setSearchTerm = useFilterStore((state) => state.setSearchTerm);
   return (
     <section className="hero mb-20">
-      {/* Fanned poster stack */}
       <div className="hero-posters">
         <img
           src={heroImage1}
@@ -27,21 +26,15 @@ export default function Hero() {
           className="hero-poster hero-poster--right"
         />
       </div>
-
-      {/* Headline */}
       <h1>
         Find <span className="text-gradient">Movies</span> You'll Love
         <br />
         Without the Hassle
       </h1>
-
-      {/* Subheadline */}
       <p className="hero-sub">
         Discover trending films, explore popular picks, and get personalised
         recommendations — all in one place.
       </p>
-
-      {/* Search bar */}
       <div className="search">
         <div>
           <img src={searchIcon} alt="search" />

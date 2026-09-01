@@ -66,6 +66,7 @@ Update this file after every meaningful implementation change.
   - Automatically resets pagination (`currentPage: 1`) upon changing search query or category list mode.
   - Refactored `Hero`, `MovieListSelect`, `Popular`, and `HomePage` to consume store state and actions directly, eliminating prop-drilling.
   - Preserves user search term, active category filter, and current page position when navigating between `HomePage` (`/`) and `MoviePage` (`/movie/:id`).
+  - Added a circular reset button in `Popular.tsx` using Lucide's `RotateCcw` icon connected to `resetFilters()`.
 
 
 ## In Progress
