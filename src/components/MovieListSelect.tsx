@@ -6,31 +6,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { MovieListType } from "@/pages/HomePage";
-import React from "react";
+import React, { useCallback } from "react";
+import {useFilterStore, type MovieListType} from "@/store/store"
 
-interface MovieListSelectProps {
-  value: MovieListType;
-  onValueChange: (value: MovieListType) => void;
-}
 const items: { label: string; value: MovieListType }[] = [
   { label: "Popular", value: "popular" },
   { label: "Top Rated", value: "top_rated" },
   { label: "Now Playing", value: "now_playing" },
   { label: "Upcoming" , value: "upcoming"}
 ];
-const MovieListSelect = ({ value, onValueChange }: MovieListSelectProps) => {
+const MovieListSelect = () => {
+  const {listMode, setListMode, setCurrentPage} = useFilterStore()
+  const handleListModeChange = useCallback((nextMode: MovieListType) => {
+    setListMode(nextMode);
+    setCurrentPage(1);
+  }, []);
   return (
     <Select
       items={items}
-      value={value}
+      value={listMode}
       onValueChange={(newValue) => {
         if (newValue) {
-          onValueChange(newValue as MovieListType);
+          handleListModeChange(newValue);
         }
       }}
     >
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-45">
         <SelectValue className="text-foreground" placeholder="Popular" />
       </SelectTrigger>
       <SelectContent>

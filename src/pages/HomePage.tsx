@@ -12,6 +12,7 @@ import {
   saveSearchCount,
   type Movie,
 } from "../lib/api";
+import { useFilterStore } from "@/store/store";
 import {
   useInfiniteQuery,
   useMutation,
@@ -22,19 +23,11 @@ import Spinner from "../elements/Spinner";
 
 const EMPTY_MOVIES: Movie[] = [];
 
-export type MovieListType =
-  | "popular"
-  | "top_rated"
-  | "now_playing"
-  | "upcoming";
-
 export default function HomePage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [listMode, setListMode] = useState<MovieListType>("popular");
-  const handleListModeChange = useCallback((nextMode: MovieListType) => {
-    setListMode(nextMode);
-    setCurrentPage(1);
-  }, []);
+  //const [searchTerm, setSearchTerm] = useState("");
+  const { searchTerm, listMode, currentPage, setCurrentPage } =
+    useFilterStore();
+
   const queryClient = useQueryClient();
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -107,19 +100,18 @@ export default function HomePage() {
     window.addEventListener("resize", updatePageSize);
     return () => window.removeEventListener("resize", updatePageSize);
   }, []);
-  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const totalPages = Math.max(Math.ceil(totalResults / pageSize), 1);
 
   const movePagePrev = useCallback(() => {
-    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
-  }, []);
+    setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage);
+  }, [currentPage]);
   const movePageNext = useCallback(() => {
-    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
-  }, [totalPages]);
+    setCurrentPage(currentPage < totalPages ? currentPage + 1 : currentPage);
+  }, [currentPage, totalPages]);
   useEffect(() => {
-    setCurrentPage((prev) => (prev > totalPages ? totalPages : prev));
-  }, [totalPages]);
+    setCurrentPage(currentPage > totalPages ? totalPages : currentPage);
+  }, [currentPage, totalPages]);
 
   useEffect(() => {
     const neededMovies = currentPage * pageSize;
@@ -142,7 +134,7 @@ export default function HomePage() {
         <header>
           <img src={logoSvg} alt="MoodFix logo" />
         </header>
-        <Hero searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <Hero />
         <Trending trendingMovies={trendingQuery.data || []} />
         {(isLoading && !movies.length) || isWaitingOnPage ? (
           <ul className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -162,8 +154,6 @@ export default function HomePage() {
         ) : (
           <Popular
             movieList={movies}
-            listMode={listMode}
-            handleListModeChange={handleListModeChange}
             currentPage={currentPage}
             pageSize={pageSize}
           />

@@ -60,6 +60,12 @@ Update this file after every meaningful implementation change.
   styles.
 - Fixed the movie-list Select's selected-value foreground so it stays
   legible against the dark trigger surface.
+- Integrated Zustand for global search, filter, and discovery state:
+  - Installed `zustand` dependency.
+  - Created `src/store/store.ts` (`useFilterStore`) managing `searchTerm`, `listMode` (`"popular" | "top_rated" | "now_playing" | "upcoming"`), `currentPage`, and their respective actions (`setSearchTerm`, `setListMode`, `setCurrentPage`, `resetFilters`).
+  - Automatically resets pagination (`currentPage: 1`) upon changing search query or category list mode.
+  - Refactored `Hero`, `MovieListSelect`, `Popular`, and `HomePage` to consume store state and actions directly, eliminating prop-drilling.
+  - Preserves user search term, active category filter, and current page position when navigating between `HomePage` (`/`) and `MoviePage` (`/movie/:id`).
 
 
 ## In Progress

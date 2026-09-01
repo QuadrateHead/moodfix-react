@@ -1,13 +1,12 @@
-import type { Dispatch, SetStateAction } from 'react';
-import heroImage1 from '../assets/images/home-hero-image-1.png';
-import heroImage2 from '../assets/images/home-hero-image-2.png';
-import heroInfoImage from '../assets/images/home-hero-info-image.png';
-import searchIcon from '../assets/search-icon.svg';
-interface HeroProps{
-  searchTerm: string
-  setSearchTerm: Dispatch<SetStateAction<string>>
-}
-export default function Hero({searchTerm,setSearchTerm}: HeroProps) {
+import { useFilterStore } from "@/store/store";
+import heroImage1 from "../assets/images/home-hero-image-1.png";
+import heroImage2 from "../assets/images/home-hero-image-2.png";
+import heroInfoImage from "../assets/images/home-hero-info-image.png";
+import searchIcon from "../assets/search-icon.svg";
+
+export default function Hero() {
+  const searchTerm = useFilterStore((state) => state.searchTerm);
+  const setSearchTerm = useFilterStore((state) => state.setSearchTerm);
   return (
     <section className="hero mb-20">
       {/* Fanned poster stack */}

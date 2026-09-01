@@ -50,5 +50,7 @@
   internals unless required for project compatibility.
 - `/src/elements` — reusable, composable UI pieces (`MovieCard`,
   `TrendingCard`, `Logo`)
+- `/src/store` — Zustand store hooks and client-side global state definitions
 - `/src/assets/images` — static image assets (posters, backdrops,
   icons not covered by Lucide)
+

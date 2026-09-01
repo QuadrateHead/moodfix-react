@@ -23,6 +23,9 @@ The visual style is dark and cinematic. Posters, backdrops, ranking cards, badge
 - **Movie search**
   Users can search for movies by title from the home page. The search input is debounced, so the app waits briefly before requesting results instead of making a request on every keystroke. This improves performance and gives the interface a smoother feel during typing.
 
+- **Global Discovery & Filter State (Zustand)**
+  Search query, active movie list category (`popular`, `top_rated`, `now_playing`, `upcoming`), and pagination positions are managed globally through a lightweight Zustand store (`useFilterStore`). This eliminates prop drilling across `Hero`, `Popular`, `MovieListSelect`, and `Pagination`, while preserving the user's exact search criteria and browsing position when navigating between `/` and `/movie/:id`.
+
 - **Popular movie grid**
   The home page displays a responsive grid of movies. On large screens it shows more cards per page, while smaller screens reduce the page size so the layout stays usable. Movie data is loaded incrementally from TMDB as the user browses further, rather than all at once. Each movie card presents the core information needed for fast scanning, such as poster artwork, title, rating, language, and release year.
 
@@ -56,6 +59,7 @@ The visual style is dark and cinematic. Posters, backdrops, ranking cards, badge
 | Vite | Provides the development server, fast builds, and frontend tooling for the React app. |
 | Tailwind CSS | Handles the dark visual system, spacing, typography, grids, responsive layout, and component styling. |
 | React Router DOM | Manages hash-based client-side routes for login, signup, home, and movie detail pages. |
+| Zustand | Manages global client-side state for search query, list category filter, and pagination across route transitions. |
 | TanStack React Query | Fetches, caches, and refreshes movie list data, movie detail data, and trending movie data. |
 | React Hook Form | Controls authentication forms and client-side validation behavior. |
 | Zod | Validates TMDB API responses before the data reaches the UI. |
@@ -98,7 +102,12 @@ src/
   elements/        Small reusable UI elements such as cards, fields, and spinner
   lib/             API, Appwrite, and service-level logic
   pages/           Main route pages: Home, Movie Detail, Sign In, and Sign Up
+  store/           Zustand store definitions for global client-side state
   assets/          Static SVG and image assets
+
+context/           Project planning, architecture notes, UI rules, and progress tracking
+public/            Public static assets
+```
 
 context/           Project planning, architecture notes, UI rules, and progress tracking
 public/            Public static assets

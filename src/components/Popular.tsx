@@ -3,18 +3,16 @@ import MovieCard from "../elements/MovieCard";
 import { memo, useMemo } from "react";
 import type { Movie } from "../lib/api";
 import MovieListSelect from "./MovieListSelect";
-import type { MovieListType } from "@/pages/HomePage";
-
+import { useFilterStore } from "@/store/store";
 
 interface PopularProps {
   movieList: Movie[]
   currentPage: number
   pageSize: number
-  listMode: MovieListType
-  handleListModeChange: (nextMode: MovieListType) => void
 }
 
-function Popular({movieList, currentPage, pageSize, listMode, handleListModeChange} : PopularProps) {
+function Popular({movieList, currentPage, pageSize} : PopularProps) {
+  const listMode = useFilterStore((state) => state.listMode);
   const visibleMovies = useMemo(
     () => movieList.slice(pageSize * (currentPage - 1), pageSize * currentPage),
     [movieList, currentPage, pageSize]
@@ -23,7 +21,7 @@ function Popular({movieList, currentPage, pageSize, listMode, handleListModeChan
     <section className="all-movies">
       <div className="flex items-center justify-between">
         <h2 className = "capitalize" >{listMode.replace("_", " ")}</h2>
-        <MovieListSelect value={listMode} onValueChange={handleListModeChange}/>
+        <MovieListSelect/>
       </div>
       <ul>
         {visibleMovies.map((movie) => (
