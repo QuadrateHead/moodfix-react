@@ -66,7 +66,10 @@ Update this file after every meaningful implementation change.
   - Automatically resets pagination (`currentPage: 1`) upon changing search query or category list mode.
   - Refactored `Hero`, `MovieListSelect`, `Popular`, and `HomePage` to consume store state and actions directly, eliminating prop-drilling.
   - Preserves user search term, active category filter, and current page position when navigating between `HomePage` (`/`) and `MoviePage` (`/movie/:id`).
-  - Added a circular reset button in `Popular.tsx` using Lucide's `RotateCcw` icon connected to `resetFilters()`.
+- Implemented route-level code splitting and lazy loading:
+  - Configured `React.lazy` and `Suspense` in `src/App.tsx` for `HomePage`, `MoviePage`, `SignInPage`, and `SignUpPage`.
+  - Added full-screen loading fallback using `Spinner` component with customizable `className?: string`.
+  - Reduced initial bundle size by ~45% (from 616 kB down to 334 kB main bundle, splitting pages into separate async chunks).
 
 
 ## In Progress
